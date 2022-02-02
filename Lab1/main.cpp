@@ -92,13 +92,13 @@ int main() {
     int w = 10;
     cout << setw(w) << "";
     for (int i = 0; i < n; ++i) {
-        cout << setw(w) << car[i];
+        cout << setw(w) << "Q" << i;
     }
-    cout << setw(w) << "SF";
+    cout << setw(w) << "QF";
     cout << endl;
 
     for (int i = 0; i < n; ++i) {
-        cout << setw(w) << car[i];
+        cout << setw(w) << "Q" << i;
         for (int j = 0; j < n + 1; ++j) {
             cout << setw(w) << a[i][j];
         }
