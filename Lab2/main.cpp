@@ -145,45 +145,44 @@ int main() {
 
 //   afisare prin tranzitii (q0 -> a q1)
 //
-//    for (const auto &i: relations) {
-//        if (!state_name_from_set(i.second).empty() and active_states.count(i.first.first))
-//            cout << format_final_state(i.first.first,final_state) << " ->" << i.first.second << " " << format_final_state(state_name_from_set(i.second),final_state) << endl;
-//
-//    }
+    for (const auto &i: relations) {
+        if (!state_name_from_set(i.second).empty() and active_states.count(i.first.first))
+            cout << "ro("<<format_final_state(i.first.first,final_state) << "," << i.first.second << ") = " << format_final_state(state_name_from_set(i.second),final_state) << endl;
+    }
 
 
 
 //afisare prin tabel
 
-    int width = 15;
-
-    cout << setw(width) << "";
-    for (const auto &i: alfabet) {
-        cout << setw(width) << i;
-    }
-    cout << endl;
-    cout << endl;
-
-    for (const auto &i: active_states) {
-        cout << setw(width) << format_final_state(i, final_state);
-        for (const auto &j: alfabet) {
-            if (!relations[{i, j}].empty())
-                cout << setw(width) << format_final_state(state_name_from_set(relations[{i, j}]), final_state);
-            else
-                cout << setw(width) << "-";
-        }
-        cout << endl;
-    }
-    cout << endl;
-
-
-    for (const auto &i: alfabet) {
-        if (!relations[{init_state, i}].empty() and
-            !is_final_state(state_name_from_set(relations[{init_state, i}]), final_state)) {
-            cout << "String  " << i << "  cannot be obtained!";
-            break;
-        }
-    }
+//    int width = 15;
+//
+//    cout << setw(width) << "";
+//    for (const auto &i: alfabet) {
+//        cout << setw(width) << i;
+//    }
+//    cout << endl;
+//    cout << endl;
+//
+//    for (const auto &i: active_states) {
+//        cout << setw(width) << format_final_state(i, final_state);
+//        for (const auto &j: alfabet) {
+//            if (!relations[{i, j}].empty())
+//                cout << setw(width) << format_final_state(state_name_from_set(relations[{i, j}]), final_state);
+//            else
+//                cout << setw(width) << "-";
+//        }
+//        cout << endl;
+//    }
+//    cout << endl;
+//
+//
+//    for (const auto &i: alfabet) {
+//        if (!relations[{init_state, i}].empty() and
+//            !is_final_state(state_name_from_set(relations[{init_state, i}]), final_state)) {
+//            cout << "String  " << i << "  cannot be obtained!";
+//            break;
+//        }
+//    }
 
 
     return 0;
