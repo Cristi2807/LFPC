@@ -1,6 +1,9 @@
 #include <iostream>
 #include <map>
 #include <set>
+#include <iomanip>
+#include <utility>
+#include <queue>
 
 
 using namespace std;
@@ -36,12 +39,34 @@ void set_active_states(const string &state, set<string> *active) {
 }
 
 string format_final_state(const string &to_check, const string &final_state) {
-    int pos = to_check.find(final_state);
+    unsigned long long pos = to_check.find(final_state);
 
     if (pos + 1) return to_check + '*';
     else return to_check;
 }
 
+bool is_final_state(const string &to_check, const string &final_state) {
+    unsigned long long pos = to_check.find(final_state);
+
+    if (pos + 1) return true;
+    else return false;
+
+}
+
+
+struct Transition {
+
+    Transition(string state_1, string via, set<string> state_2) {
+        this->state_1 = move(state_1);
+        this->state_2 = move(state_2);
+        this->via = move(via);
+    }
+
+    string state_1;
+    string via;
+    set<string> state_2;
+
+};
 
 int main() {
 
@@ -58,16 +83,6 @@ int main() {
 
     set<string> alfabet;
 
-    cout << "Alfabetul:" << endl;
-    string read_alfabet;
-
-    while (read_alfabet != "end") {
-        getline(cin, read_alfabet);
-        if (read_alfabet != "end" and !read_alfabet.empty()) {
-            alfabet.insert(read_alfabet);
-        }
-    }
-
 
     cout << "Relations:" << endl;
     string read_relation;
@@ -77,7 +92,7 @@ int main() {
 
         if (read_relation != "end" and !read_relation.empty()) {
             string state_1, state_2, via;
-            int equal_position, space_position;
+            unsigned long long equal_position, space_position;
 
             equal_position = read_relation.find('=');
             space_position = read_relation.find(' ');
@@ -87,23 +102,39 @@ int main() {
             state_2 = read_relation.substr(space_position + 1, read_relation.length() - 1 - space_position);
 
             relations[{state_1, via}].insert(state_2);
+            alfabet.insert(via);
         }
     }
 
 
+    queue<Transition> queue_new_states;
+
     for (const auto &i: relations) {
+        queue_new_states.push(Transition(i.first.first, i.first.second, i.second));
+    }
 
-        if (i.second.size() > 1) {
-            string new_state = state_name_from_set((i.second));
+
+    while (!queue_new_states.empty()) {
+
+        relations[{queue_new_states.front().state_1, queue_new_states.front().via}] = queue_new_states.front().state_2;
+
+        if (queue_new_states.front().state_2.size() > 1) {
+            string new_state = state_name_from_set((queue_new_states.front().state_2));
+
             for (const auto &j: alfabet) {
-                for (const auto &k: i.second) {
+                set<string> new_state_set;
 
-                    set_uniune(&relations[{new_state, j}], &relations[{k, j}]);
-
+                for (const auto &k: queue_new_states.front().state_2) {
+                    set_uniune(&new_state_set, &relations[{k, j}]);
                 }
+
+                if (relations[{new_state, j}] != new_state_set)
+                    queue_new_states.push(Transition(new_state, j, new_state_set));
             }
 
         }
+
+        queue_new_states.pop();
     }
 
 
@@ -111,13 +142,48 @@ int main() {
     set_active_states(init_state, &active_states);
 
 
-    for (const auto &i: relations) {
-        if (!state_name_from_set(i.second).empty() and active_states.count(i.first.first))
-            cout << format_final_state(i.first.first,final_state) << " ->" << i.first.second << " " << format_final_state(state_name_from_set(i.second),final_state) << endl;
 
+//   afisare prin tranzitii (q0 -> a q1)
+//
+//    for (const auto &i: relations) {
+//        if (!state_name_from_set(i.second).empty() and active_states.count(i.first.first))
+//            cout << format_final_state(i.first.first,final_state) << " ->" << i.first.second << " " << format_final_state(state_name_from_set(i.second),final_state) << endl;
+//
+//    }
+
+
+
+//afisare prin tabel
+
+    int width = 15;
+
+    cout << setw(width) << "";
+    for (const auto &i: alfabet) {
+        cout << setw(width) << i;
     }
+    cout << endl;
+    cout << endl;
+
+    for (const auto &i: active_states) {
+        cout << setw(width) << format_final_state(i, final_state);
+        for (const auto &j: alfabet) {
+            if (!relations[{i, j}].empty())
+                cout << setw(width) << format_final_state(state_name_from_set(relations[{i, j}]), final_state);
+            else
+                cout << setw(width) << "-";
+        }
+        cout << endl;
+    }
+    cout << endl;
 
 
+    for (const auto &i: alfabet) {
+        if (!relations[{init_state, i}].empty() and
+            !is_final_state(state_name_from_set(relations[{init_state, i}]), final_state)) {
+            cout << "String  " << i << "  cannot be obtained!";
+            break;
+        }
+    }
 
 
     return 0;
