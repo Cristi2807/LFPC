@@ -1,0 +1,18 @@
+# CLike Programming Language
+
+int '' ( int n){
+
+if (n>1) return n*factorial(n-1);
+else return 1;
+}
+
+int main(){
+
+# string s="apa";
+
+int x=factorial(4);
+
+print(x);
+
+return 0;
+}
